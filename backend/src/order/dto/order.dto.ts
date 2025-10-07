@@ -1,8 +1,8 @@
 //TODO реализовать DTO для /orders
-import { GetFilmsDto, ScheduleDto } from 'src/films/dto/films.dto';
+import { GetFilmDto, ScheduleDto } from 'src/films/dto/films.dto';
 
 export class CreateOrderDto {
-  film: GetFilmsDto;
+  film: GetFilmDto;
   session: ScheduleDto;
   daytime: string;
   row: number;

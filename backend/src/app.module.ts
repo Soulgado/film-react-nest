@@ -16,7 +16,7 @@ import { OrderService } from './order/order.service';
       cache: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: path.join(__dirname, 'public'),
+      rootPath: path.join(__dirname, 'public/content/afisha/'),
       serveRoot: '/content/afisha',
     }),
     // @todo: Добавьте раздачу статических файлов из public
