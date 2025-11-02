@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import * as path from 'node:path';
 
@@ -15,6 +16,14 @@ import { FilmsMongoDbRepository } from './repository/films.repository';
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: async () => {
+        const config = configProvider.useValue;
+        return {
+          uri: config.database.url,
+        };
+      },
     }),
     ServeStaticModule.forRoot({
       rootPath: path.join(__dirname, 'public/content/afisha/'),
