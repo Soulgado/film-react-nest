@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilmsMongoDbRepository } from 'src/repository/films.repository';
 
 @Injectable()
@@ -10,6 +10,10 @@ export class FilmsService {
   }
 
   public async getFilmById(id: string) {
-    return this.filmsRepository.getFilmById(id);
+    const film = await this.filmsRepository.getFilmById(id);
+    if (!film) {
+      throw new NotFoundException('Film not found');
+    }
+    return film;
   }
 }

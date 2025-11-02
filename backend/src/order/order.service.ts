@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetFilmDto } from 'src/films/dto/films.dto';
 import { FilmsMongoDbRepository } from 'src/repository/films.repository';
 import { CreateOrderDto } from './dto/order.dto';
@@ -8,7 +12,11 @@ export class OrderService {
   constructor(private filmRepository: FilmsMongoDbRepository) {}
 
   public async getFilmById(id: string) {
-    return this.filmRepository.getFilmById(id);
+    const film = await this.filmRepository.getFilmById(id);
+    if (!film) {
+      throw new NotFoundException('Film not found');
+    }
+    return film;
   }
 
   public async saveFilmData(film: GetFilmDto) {
