@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { CreateOrderDto } from './dto/order.dto';
 import { OrderService } from './order.service';
 
@@ -8,20 +14,11 @@ export class OrderController {
 
   @Post()
   public async order(@Body() createOrderDto: CreateOrderDto) {
-    const film = await this.orderService.getFilmById(createOrderDto.film.id);
-    const session = film.schedule.find(
-      (s) => s.id === createOrderDto.session.id,
-    );
-    if (
-      session.taken.some(
-        (seat) => seat === `${createOrderDto.row}:${createOrderDto.seat}`,
-      )
-    ) {
-      return 'Seat has already been taken';
-    } else {
-      session.taken.push(`${createOrderDto.row}:${createOrderDto.seat}`);
-      this.orderService.saveFilmData(film);
+    try {
+      const result = await this.orderService.processOrder(createOrderDto);
+      return { message: result };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return 'Success';
   }
 }
