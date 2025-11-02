@@ -1,11 +1,11 @@
 import {
   Injectable,
-  ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { GetFilmDto } from 'src/films/dto/films.dto';
 import { FilmsMongoDbRepository } from 'src/repository/films.repository';
-import { CreateOrderDto } from './dto/order.dto';
+import { CreateOrderDto, TicketDto } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
@@ -24,24 +24,48 @@ export class OrderService {
   }
 
   public async processOrder(createOrderDto: CreateOrderDto) {
-    const film = await this.getFilmById(createOrderDto.film.id);
-    const session = film.schedule.find(
-      (s) => s.id === createOrderDto.session.id,
-    );
+    const processedTickets: TicketDto[] = [];
 
-    if (!session) {
-      throw new Error('Session not found');
+    for (const ticket of createOrderDto.tickets) {
+      const processedTicket = await this.processTicket(ticket);
+      processedTickets.push(processedTicket);
     }
 
-    const seatIdentifier = `${createOrderDto.row}:${createOrderDto.seat}`;
+    return {
+      total: processedTickets.length,
+      items: processedTickets,
+    };
+  }
 
-    if (session.taken.some((seat) => seat === seatIdentifier)) {
-      throw new ConflictException('Seat has already been taken');
+  private async processTicket(ticket: TicketDto): Promise<TicketDto> {
+    const film = await this.filmRepository.getFilmById(ticket.film);
+
+    if (!film) {
+      throw new NotFoundException('Film is not found');
+    }
+
+    const session = film.schedule.find((s) => s.id === ticket.session);
+    if (!session) {
+      throw new NotFoundException('Session is not found');
+    }
+
+    const seatIdentifier = `${ticket.row}:${ticket.seat}`;
+    if (session.taken.includes(seatIdentifier)) {
+      throw new BadRequestException(
+        `Seat ${seatIdentifier} has already been taken`,
+      );
     }
 
     session.taken.push(seatIdentifier);
-    await this.saveFilmData(film);
+    await this.filmRepository.save(film);
 
-    return 'Success';
+    return {
+      film: ticket.film,
+      session: ticket.session,
+      daytime: ticket.daytime,
+      row: ticket.row,
+      seat: ticket.seat,
+      price: ticket.price,
+    };
   }
 }

@@ -1,11 +1,20 @@
 //TODO реализовать DTO для /orders
-import { GetFilmDto, ScheduleDto } from 'src/films/dto/films.dto';
-
 export class CreateOrderDto {
-  film: GetFilmDto;
-  session: ScheduleDto;
+  email: string;
+  phone: string;
+  tickets: TicketDto[];
+}
+
+export class TicketDto {
+  film: string;
+  session: string;
   daytime: string;
   row: number;
   seat: number;
   price: number;
+}
+
+export class OrderResponseDto {
+  total: number;
+  items: TicketDto[];
 }
