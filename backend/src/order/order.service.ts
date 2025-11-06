@@ -4,12 +4,12 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { GetFilmDto } from 'src/films/dto/films.dto';
-import { FilmsMongoDbRepository } from 'src/repository/films.repository';
+import { FilmsDBRepository } from 'src/repository/films.repository';
 import { CreateOrderDto, TicketDto } from './dto/order.dto';
 
 @Injectable()
 export class OrderService {
-  constructor(private filmRepository: FilmsMongoDbRepository) {}
+  constructor(private filmRepository: FilmsDBRepository) {}
 
   public async getFilmById(id: string) {
     const film = await this.filmRepository.getFilmById(id);
