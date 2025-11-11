@@ -1,85 +1,13 @@
-import mongoose, { Schema, Mongoose } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
 import { GetFilmDto } from 'src/films/dto/films.dto';
+import { Film } from 'src/films/entities/film.entity';
+import { Repository } from 'typeorm';
 
-const ScheduleSchema = new Schema({
-  daytime: {
-    type: String,
-    required: true,
-  },
-  hall: {
-    type: Number,
-    required: true,
-  },
-  rows: {
-    type: Number,
-    required: true,
-  },
-  seats: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  taken: [
-    {
-      type: String,
-    },
-  ],
-});
-
-const FilmsSchema = new Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  rating: {
-    type: Number,
-    required: true,
-  },
-  director: {
-    type: String,
-    required: true,
-  },
-  tags: [
-    {
-      type: String,
-    },
-  ],
-  image: {
-    type: String,
-    required: true,
-  },
-  cover: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  about: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  schedule: {
-    type: [ScheduleSchema],
-    required: true,
-  },
-});
-
-const Film = mongoose.model('Film', FilmsSchema);
-
-export default Film;
-
-export class FilmsMongoDbRepository {
-  constructor(private connection: Mongoose) {}
+export class FilmsDBRepository {
+  constructor(
+    @InjectRepository(Film)
+    private filmRepository: Repository<Film>,
+  ) {}
 
   private getFilmMapperFn(film): GetFilmDto {
     return {
@@ -89,16 +17,18 @@ export class FilmsMongoDbRepository {
   }
 
   async getFilmById(id: string): Promise<GetFilmDto> {
-    const item = await Film.findById(id);
+    const item = await this.filmRepository.findOneBy({
+      id: id,
+    });
     return this.getFilmMapperFn(item);
   }
 
   async getFilms(): Promise<Omit<GetFilmDto, 'schedule'>[]> {
-    const films = await Film.find({}).select({ schedule: 0 });
+    const films = await this.filmRepository.find({ relations: ['schedule'] });
     return films.map((film) => this.getFilmMapperFn(film));
   }
 
   async save(film: GetFilmDto) {
-    await Film.updateOne(film);
+    await this.filmRepository.update({ id: film.id }, film);
   }
 }
