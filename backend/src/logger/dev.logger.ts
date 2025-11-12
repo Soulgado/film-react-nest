@@ -4,7 +4,7 @@ import { Injectable, ConsoleLogger } from '@nestjs/common';
 export class DevLogger extends ConsoleLogger {
   log(message: string) {
     console.log(`Logging message: ${message}`);
-  }  
+  }
 
   warn(message: string) {
     console.log(`Warning message: ${message}`);
@@ -13,4 +13,4 @@ export class DevLogger extends ConsoleLogger {
   error(message: string) {
     console.log(`Error message: ${message}`);
   }
-} 
+}

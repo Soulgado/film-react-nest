@@ -9,20 +9,20 @@ export class JsonLogger implements LoggerService {
    * Write a 'log' level log.
    */
   log(message: any, ...optionalParams: any[]) {
-    console.log(this.formatMessage('log', message, optionalParams));
+    console.log(this.formatMessage('log', message, ...optionalParams));
   }
 
   /**
    * Write a 'warn' level log
    */
   warn(message: any, ...optionalParams: any[]) {
-    console.log(this.formatMessage('warn', message, optionalParams));
+    console.log(this.formatMessage('warn', message, ...optionalParams));
   }
 
-  /** 
+  /**
    * Write an 'error' level log
    */
   error(message: any, ...optionalParams: any[]) {
-    console.log(this.formatMessage('error', message, optionalParams));
+    console.log(this.formatMessage('error', message, ...optionalParams));
   }
-} 
+}
