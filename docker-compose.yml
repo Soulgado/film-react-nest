@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: "postgres:16"
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - internal
+
+  frontend:
+    image: "film-react-nest-frontend:latest"
+    restart: "unless-stopped"
+    build: 
+      context: ./frontend
+      dockerfile: DOCKERFILE
+    volumes:
+      - frontend_build:/app/dist
+
+  backend:
+    image: "film-react-nest-backend:latest"
+    restart: "unless-stopped"
+    build: 
+      context: ./backend
+      dockerfile: DOCKERFILE
+    ports: 
+      - "3000:3000"
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+  server:
+    image: "film-react-nest-server:latest"
+    build: 
+      context: ./nginx
+      dockerfile: DOCKERFILE
+    ports: 
+      - "80:80"
+    volumes:
+      - frontend_build:/var/www
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - internal
+
+volumes:
+  pg_data:
+  frontend_build:
+
+networks:
+  internal:
+
