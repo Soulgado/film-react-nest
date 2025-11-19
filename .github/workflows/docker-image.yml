@@ -13,6 +13,12 @@ jobs:
       packages: write
       contents: write
     steps:
+      - name: set lower case owner name
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
+        env:
+          OWNER: '${{ github.repository_owner }}'
+          
       - name: Checkout
         uses: actions/checkout@v5
       
@@ -35,7 +41,7 @@ jobs:
           context: ./backend
           file: ./backend/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-backend:latest'
+          tags: 'ghcr.io/${{ env.OWNER_LC }}/film-react-nest-backend:latest'
       
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -43,7 +49,7 @@ jobs:
           context: ./frontend
           file: ./frontend/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-frontend:latest'
+          tags: 'ghcr.io/${{ env.OWNER_LC }}/film-react-nest-frontend:latest'
       
       - name: Build and push server
         uses: docker/build-push-action@v6
@@ -51,4 +57,4 @@ jobs:
           context: ./nginx
           file: ./nginx/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-server:latest'
+          tags: 'ghcr.io/${{ env.OWNER_LC }}/film-react-nest-server:latest'
