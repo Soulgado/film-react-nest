@@ -32,20 +32,23 @@ jobs:
       - name: Build and push backend
         uses: docker/build-push-action@v6
         with: 
-          context: '{{defaultContenxt}}:backend'
+          context: ./backend
+          file: ./backend/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ env.REPO }}/film-react-nest-backend:latest'
+          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-backend:latest'
       
       - name: Build and push frontend
         uses: docker/build-push-action@v6
         with: 
-          context: '{{defaultContenxt}}:frontend'
+          context: ./frontend
+          file: ./frontend/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ env.REPO }}/film-react-nest-frontend:latest'
+          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-frontend:latest'
       
       - name: Build and push server
         uses: docker/build-push-action@v6
         with: 
-          context: '{{defaultContenxt}}:nginx'
+          context: ./nginx
+          file: ./nginx/DOCKERFILE
           push: true
-          tags: 'ghcr.io/${{ env.REPO }}/film-react-nest-server:latest'
+          tags: 'ghcr.io/${{ github.repository_owner }}/film-react-nest-server:latest'
