@@ -13,15 +13,6 @@ jobs:
       packages: write
       contents: write
     steps:
-      - name: set lower case owner name
-        run: /
-          echo "REPO=${OWNER,,}" >> ${GITHUB_ENV}
-        env: 
-          OWNER: '${{ github.repository_owner }}'
-
-      - run: /
-          echo "repo ${REPO}"
-
       - name: Checkout
         uses: actions/checkout@v5
       
